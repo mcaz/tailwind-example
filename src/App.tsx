@@ -3,26 +3,25 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { createStyleHook, VariantPropsOfStyleHook } from './utils/createStyleHook';
-import { tv } from 'tailwind-variants';
+
+type Variant<T extends object> = (props?: T) => string
 
 
-const useStyles = createStyleHook<{ width: number }, {
-  btn: ReturnType<typeof tv>;
-  container: ReturnType<typeof tv>;
-}>(({ tv, merge, width }) => {
-  // ここでは、userCtx の値（例: width）を利用して条件に応じたスタイル定義も可能です。
-  // ※ 以下は一例です。width を直接利用する例として、width に応じた背景色を選ぶなどのロジックも組めます。
+const useStyles = createStyleHook<
+  { width: number },
+  {
+    btn: Variant<{ size?: "md" | "lg" }>;
+    container: Variant<{ color?: "red" | "blue", size?: "md" | "lg" }>;
+  }
+>(({ tv, context }) => {
   return {
     btn: tv({
       base: "p-1 rounded",
       variants: {
         size: {
-          md: "w-[100px]",
+          md: `w-[${context.width}px]`,
           lg: "w-[200px]",
         },
-        // 例: 幅が 100 以上なら bg-blue-500、そうでなければ bg-red-500 とする
-        // ※ ここではシンプルに文字列を返す例なので、実際はユーザー側で条件分岐して利用してもよいでしょう
-        // color: width >= 100 ? "bg-blue-500" : "bg-red-500"
       },
       defaultVariants: {
         size: "md",
@@ -30,10 +29,23 @@ const useStyles = createStyleHook<{ width: number }, {
     }),
     container: tv({
       base: "p-1",
-      // container 用の variants も必要に応じて定義できます
+      variants: {
+        color: {
+          red: "bg-red-500",
+          blue: "bg-blue-500",
+        },
+        size: {
+          md: `w-[${context.width}px]`,
+          lg: "w-[200px]",
+        },
+      },
+      defaultVariants: {
+        color: "blue",
+      },
     }),
   };
 });
+
 
 type Props = VariantPropsOfStyleHook<typeof useStyles>;
 
@@ -42,7 +54,7 @@ function App(props: Props) {
 
   const s  = useStyles({ width: 100 });
 
-  s.btn({ size: 'foo' })
+  s.btn({ size: 'md' })
 
   console.log('s', s)
   console.log('s.btn', s.btn({ size: 'md' }))
