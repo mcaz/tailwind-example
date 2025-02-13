@@ -1,66 +1,17 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import { createStyleHook, VariantPropsOfStyleHook } from './utils/createStyleHook';
-
-type Variant<T extends object> = (props?: T) => string
+import { useState } from 'react';
+import './App.css';
+import reactLogo from './assets/react.svg';
+import viteLogo from '/vite.svg';
+import {Dropdown} from  './Sample'
 
 
-const useStyles = createStyleHook<
-  { width: number },
-  {
-    btn: Variant<{ size?: "md" | "lg" }>;
-    container: Variant<{ color?: "red" | "blue", size?: "md" | "lg" }>;
-  }
->(({ tv, context }) => {
-  return {
-    btn: tv({
-      base: "p-1 rounded",
-      variants: {
-        size: {
-          md: `w-[${context.width}px]`,
-          lg: "w-[200px]",
-        },
-      },
-      defaultVariants: {
-        size: "md",
-      },
-    }),
-    container: tv({
-      base: "p-1",
-      variants: {
-        color: {
-          red: "bg-red-500",
-          blue: "bg-blue-500",
-        },
-        size: {
-          md: `w-[${context.width}px]`,
-          lg: "w-[200px]",
-        },
-      },
-      defaultVariants: {
-        color: "blue",
-      },
-    }),
-  };
-});
 
-
-type Props = VariantPropsOfStyleHook<typeof useStyles>;
-
-function App(props: Props) {
+function App() {
   const [count, setCount] = useState(0)
-
-  const s  = useStyles({ width: 100 });
-
-  s.btn({ size: 'md' })
-
-  console.log('s', s)
-  console.log('s.btn', s.btn({ size: 'md' }))
 
   return (
     <>
+    <Dropdown />
       <div>
         <a href="https://vite.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
