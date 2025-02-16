@@ -1,22 +1,34 @@
+// .eslintrc.js
+const layers = [
+  { name: 'atoms', pattern: '~/components/atoms/**' },
+  { name: 'molecules', pattern: '~/components/molecules/**' },
+  { name: 'organisms', pattern: '~/components/organisms/**' },
+  { name: 'templates', pattern: '~/components/templates/**' },
+  { name: 'pages', pattern: '~/pages/**' },
+  // 他のレイヤーも追加可能
+];
+
+// 各レイヤーからは、同じレイヤーやそれより下位のレイヤーのみインポートを許可するルールを生成
+const boundariesRules = layers.map((layer, index) => ({
+  from: layer.name,
+  // ここでは、上位から順に許可する例：たとえば、atomsはそれだけ、moleculesはatomsとmolecules、…など
+  allow: layers.slice(0, index + 1).map(l => l.name),
+}));
+
 export default [
   {
-    files: ["src/**/*.{js,ts}"],
-    plugins: { import: require("eslint-plugin-import") },
+    plugins: ["boundaries"],
+    settings: {
+      boundaries: {
+        default: "disallow", // 明示的に許可していない場合はインポート禁止
+        rules: boundariesRules,
+        // パターンの設定もできるので、必要に応じて各レイヤーに対して pattern を利用することも可能
+      },
+    },
     rules: {
-      "import/no-restricted-paths": [
-        "error",
-        {
-          // zones 配列の中で target から from へのインポートを禁止できる
-          zones: [
-            {
-              target: "./src/components/atoms",
-              from: "./src/components/molecules",
-              message: "atoms は molecules を import できません"
-            },
-            // 他にも必要に応じて追加
-          ]
-        }
-      ]
-    }
-  }
+      "boundaries/element-types": "error",
+    },
+    // 対象ファイルの指定（必要に応じて調整）
+    files: ["src/**/*.{js,jsx,ts,tsx}"],
+  },
 ];
